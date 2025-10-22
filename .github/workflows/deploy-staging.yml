@@ -6,13 +6,9 @@ on:
 
 env:
   IMAGE_REGISTRY_URL: ghcr.io
-  ###############################################
-  ### Replace <username> with GitHub username ###
-  ###############################################
-  DOCKER_IMAGE_NAME: dkranzmat-azure-ttt
+  DOCKER_IMAGE_NAME: dkranzmat-azure-ttt           # already good
   AZURE_WEBAPP_NAME: dkranzmat-ttt-app
-  ###############################################
-
+  GHCR_IMAGE: ghcr.io/dkranzmat/dkranzmat-azure-ttt  # <-- all lowercase, canonical
 
 jobs:
   build:
@@ -59,7 +55,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{env.IMAGE_REGISTRY_URL}}/${{ github.repository }}/${{env.DOCKER_IMAGE_NAME}}
+          images: ${{ env.GHCR_IMAGE }}
           tags: |
             type=sha,format=long,prefix=
 
@@ -90,8 +86,8 @@ jobs:
       - name: Deploy web app container
         uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{env.AZURE_WEBAPP_NAME}}
-          images: ${{env.IMAGE_REGISTRY_URL}}/${{ github.repository }}/${{env.DOCKER_IMAGE_NAME}}:${{ github.sha }}
+          app-name: ${{ env.AZURE_WEBAPP_NAME }}
+          images: ${{ env.GHCR_IMAGE }}:${{ github.sha }}
 
       - name: Azure logout via Azure CLI
         uses: azure/CLI@v2
