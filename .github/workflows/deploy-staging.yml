@@ -8,7 +8,11 @@ env:
   IMAGE_REGISTRY_URL: ghcr.io
   DOCKER_IMAGE_NAME: dkranzmat-azure-ttt           # already good
   AZURE_WEBAPP_NAME: dkranzmat-ttt-app
+staging-fix-dkranzmat
+  ###############################################
+
   GHCR_IMAGE: ghcr.io/dkranzmat/dkranzmat-azure-ttt  # <-- all lowercase, canonical
+ main
 
 jobs:
   build:
