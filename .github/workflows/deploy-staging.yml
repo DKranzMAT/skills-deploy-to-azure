@@ -6,18 +6,13 @@ on:
 
 env:
   IMAGE_REGISTRY_URL: ghcr.io
-  DOCKER_IMAGE_NAME: dkranzmat-azure-ttt           # already good
+  DOCKER_IMAGE_NAME: dkranzmat-azure-ttt
   AZURE_WEBAPP_NAME: dkranzmat-ttt-app
-staging-fix-dkranzmat
-  ###############################################
-
-  GHCR_IMAGE: ghcr.io/dkranzmat/dkranzmat-azure-ttt  # <-- all lowercase, canonical
- main
+  GHCR_IMAGE: ghcr.io/dkranzmat/dkranzmat-azure-ttt
 
 jobs:
   build:
     if: contains(github.event.pull_request.labels.*.name, 'stage')
-
     runs-on: ubuntu-latest
 
     steps:
@@ -31,13 +26,14 @@ jobs:
           npm run build
       - uses: actions/upload-artifact@v4
         with:
-          name: webpack artifacts
+          name: webpack-artifacts       # small naming fix (no space)
           path: public/
 
-  Build-Docker-Image:
+  build-docker-image:
     runs-on: ubuntu-latest
     needs: build
     name: Build image and store in GitHub Container Registry
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,7 +41,7 @@ jobs:
       - name: Download built artifact
         uses: actions/download-artifact@v4
         with:
-          name: webpack artifacts
+          name: webpack-artifacts       # match the name above
           path: public
 
       - name: Log in to GHCR
@@ -71,19 +67,21 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-  Deploy-to-Azure:
+  deploy-to-azure:
     runs-on: ubuntu-latest
-    needs: Build-Docker-Image
+    needs: build-docker-image
     name: Deploy app container to Azure
+
     steps:
-      - name: "Login via Azure CLI"
+      - name: Login via Azure CLI
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-      - uses: azure/docker-login@v1
+      - name: Docker login to GHCR
+        uses: azure/docker-login@v1
         with:
-          login-server: ${{env.IMAGE_REGISTRY_URL}}
+          login-server: ${{ env.IMAGE_REGISTRY_URL }}
           username: ${{ github.actor }}
           password: ${{ secrets.CR_PAT }}
 
