@@ -34,7 +34,7 @@ jobs:
           cp public/index.html public/404.html || true
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./public
 
